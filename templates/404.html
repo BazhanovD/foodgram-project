@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}404{% endblock %}
+{% block content %}
+{% block static %}
+{% load static %}
+<link href="{% static './pages/index.css' %}" rel="stylesheet">
+{% endblock static %}
+{% include 'nav.html' with active_changepass=True %}
+<main class="main container">
+    <p class="custom-text-block">404. Нет такой страницы :(</p><a class="nav__link link" href="{% url 'index' %}">
+    <div class="custom-button-block">
+        <button class="button button_style_blue">Перейти на главную</button>
+    </div>
+</main>
+{% endblock %}
