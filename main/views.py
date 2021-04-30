@@ -11,26 +11,17 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
 from main.forms import RecipeForm
-from main.models import Ingredient, IngredientAmount, Recipe, \
-    Favorite, Tag, ShopList, Follow
+from main.models import (Ingredient, IngredientAmount, Recipe,
+                         Favorite, Tag, ShopList, Follow)
+from main.utils import get_ingredients, main_tags
 
 User = get_user_model()
 
 
-def get_ingredients(request):
-    ingredients = {}
-    for key in request.POST:
-        if key.startswith('nameIngredient'):
-            ingr = key.split('_')[1]
-            ingredients[request.POST[key]] = request.POST[
-                'valueIngredient_' + ingr]
-    return ingredients
-
-
-def get_page(request, filters, page_to_show, args_to_page={}):
+def get_page(request, filters, page_to_show, args_to_page):
     tags = request.GET.getlist('tags')
-    if tags == []:
-        tags = ['breakfast', 'lunch', 'dinner']
+    if not tags:
+        tags = list(main_tags)
     recipes = Recipe.objects.filter(**filters).filter(
         tags__value__in=tags).distinct()
     tags_list = Tag.objects.all()
@@ -47,13 +38,13 @@ def get_page(request, filters, page_to_show, args_to_page={}):
 
 
 def index(request):
-    return get_page(request, {}, 'index.html')
+    return get_page(request, {}, 'index.html', {})
 
 
 @login_required
 def my_favorites(request):
     return get_page(request, {'favorite_recipes__user': request.user},
-                    'favorite.html')
+                    'favorite.html', {})
 
 
 def profile(request, author):
@@ -65,8 +56,7 @@ def profile(request, author):
 @login_required
 def delete_recipe(request, username, recipe_id):
     recipe = get_object_or_404(Recipe, pk=recipe_id)
-    author = get_object_or_404(User, id=recipe.author_id)
-    if request.user != author:
+    if request.user != recipe.author:
         return redirect('recipe', username=username, recipe_id=recipe_id)
     recipe.delete()
     return redirect('profile', author=username)
@@ -74,67 +64,44 @@ def delete_recipe(request, username, recipe_id):
 
 @login_required
 def new_recipe(request):
-    if request.method == 'POST':
-        form = RecipeForm(request.POST or None, files=request.FILES or None)
-        if form.is_valid():
-            recipe = form.save(commit=False)
-            recipe.author = request.user
-            recipe.save()
-            ingredients = get_ingredients(request)
-            for title, quantity in ingredients.items():
-                ingredient = Ingredient.objects.get(title=title)
-                amount = IngredientAmount(
-                    recipe=recipe,
-                    ingredient=ingredient,
-                    quantity=quantity)
-                amount.save()
-            form.save_m2m()
-            return redirect('recipe',
-                            recipe_id=recipe.id,
-                            username=request.user.username
-                            )
+    form = RecipeForm(request.POST or None, files=request.FILES or None)
+    if form.is_valid():
+        recipe = form.save_recipe(request)
+        return redirect('recipe',
+                        recipe_id=recipe.id,
+                        username=request.user.username
+                        )
 
-    form = RecipeForm()
-    return render(request, 'formRecipe.html', {'form': form, })
+    texts = {'title': 'Создание рецепта', 'save_button': 'Создать рецепт'}
+    return render(request, 'formRecipe.html', {'form': form,
+                                               'texts': texts, 'edit': False})
 
 
 @login_required
 def recipe_edit(request, username, recipe_id):
     recipe = get_object_or_404(Recipe, pk=recipe_id)
-    author = get_object_or_404(User, id=recipe.author_id)
-    if request.user != author:
+    if request.user != recipe.author:
         return redirect(
             'recipe',
             username=username,
             recipe_id=recipe_id)
-    if request.method == 'POST':
-        form = RecipeForm(
-            request.POST or None,
-            files=request.FILES or None,
-            instance=recipe)
-        if form.is_valid():
-            recipe = form.save(commit=False)
-            recipe.author = request.user
-            recipe.save()
-            recipe.recipe_amounts.all().delete()
-            ingredients = get_ingredients(request)
-            for title, quantity in ingredients.items():
-                ingredient = Ingredient.objects.get(title=title)
-                amount = IngredientAmount(
-                    recipe=recipe,
-                    ingredient=ingredient,
-                    quantity=quantity)
-                amount.save()
-            form.save_m2m()
-            return redirect(
-                'recipe',
-                recipe_id=recipe.id,
-                username=request.user.username
-            )
+    form = RecipeForm(
+        request.POST or None,
+        files=request.FILES or None,
+        instance=recipe)
+    if form.is_valid():
+        recipe = form.save_recipe(request, False)
+        return redirect(
+            'recipe',
+            recipe_id=recipe.id,
+            username=request.user.username
+        )
 
-    form = RecipeForm(instance=recipe)
-    return render(request, 'formChangeRecipe.html',
-                  {'form': form, 'recipe': recipe})
+    texts = {'title': 'Редактирование рецепта',
+             'save_button': 'Сохранить рецепт'}
+    return render(request, 'formRecipe.html',
+                  {'form': form, 'recipe': recipe,
+                   'texts': texts, 'edit': True})
 
 
 def recipe_view(request, username, recipe_id):
@@ -145,19 +112,19 @@ def recipe_view(request, username, recipe_id):
 
 
 def ingredients(request):
-    text = request.GET['query']
-    ingredients = Ingredient.objects.filter(title__istartswith=text)
-    ingr_list = []
-    for ingr in ingredients:
-        ingr_list.append({'title': ingr.title, 'dimension': ingr.dimension})
-    return JsonResponse(ingr_list, safe=False)
+    if request.GET.get('query'):
+        text = request.GET['query']
+        ingr_list = list(Ingredient.objects.filter(
+            title__istartswith=text).values())
+        return JsonResponse(ingr_list, safe=False)
 
 
 @login_required
 def shop_list(request):
     if request.GET:
         recipe_id = request.GET.get('recipe_id')
-        ShopList.objects.get(user=request.user, recipe__id=recipe_id).delete()
+        get_object_or_404(ShopList, user=request.user,
+                          recipe__id=recipe_id).delete()
     purchases = Recipe.objects.filter(shop_list__user=request.user)
     return render(request, 'shopList.html', {'purchases': purchases, })
 
@@ -169,11 +136,11 @@ def get_purchases(request):
     for recipe in recipes:
         ingredients = recipe.ingredients.values_list('title', 'dimension')
         amount = recipe.recipe_amounts.values_list('quantity', flat=True)
-        for s in range(len(ingredients)):
-            title = ingredients[s][0]
-            dimension = ingredients[s][1]
-            quantity = amount[s]
-            if title in ingr.keys():
+        for key in range(len(ingredients)):
+            title = ingredients[key][0]
+            dimension = ingredients[key][1]
+            quantity = amount[key]
+            if title in ingr:
                 ingr[title] = [ingr[title][0] + quantity, dimension]
             else:
                 ingr[title] = [quantity, dimension]
@@ -211,8 +178,8 @@ def change_favorite(request, recipe_id=-1):
     if request.method == 'POST':
         recipe_id = json.loads(request.body).get('id')
         recipe = get_object_or_404(Recipe, id=recipe_id)
-        obj, created = Favorite.objects.get_or_create(user=request.user,
-                                                      recipe=recipe)
+        _, created = Favorite.objects.get_or_create(user=request.user,
+                                                    recipe=recipe)
         return JsonResponse({'success': created})
     elif request.method == 'DELETE':
         recipe = get_object_or_404(Recipe, id=recipe_id)
@@ -228,8 +195,8 @@ def make_shoplist(request, recipe_id=-1):
     if request.method == 'POST':
         recipe_id = json.loads(request.body).get('id')
         recipe = get_object_or_404(Recipe, id=recipe_id)
-        obj, created = ShopList.objects.get_or_create(user=request.user,
-                                                      recipe=recipe)
+        _, created = ShopList.objects.get_or_create(user=request.user,
+                                                    recipe=recipe)
         return JsonResponse({'success': created})
     elif request.method == 'DELETE':
         recipe = get_object_or_404(Recipe, id=recipe_id)
@@ -245,8 +212,8 @@ def subscriptions(request, author_id=-1):
     if request.method == 'POST':
         author_id = json.loads(request.body).get('id')
         author = get_object_or_404(User, id=author_id)
-        obj, created = Follow.objects.get_or_create(user=request.user,
-                                                    author=author)
+        _, created = Follow.objects.get_or_create(user=request.user,
+                                                  author=author)
         if request.user == author or not created:
             return JsonResponse({'success': False})
         return JsonResponse({'success': True})

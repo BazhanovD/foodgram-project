@@ -3,17 +3,17 @@
     {% load thumbnail %}
     {% if recipe.image %}
     {% thumbnail recipe.image '480x480' as img %}
-    <a class="link" href="{{ recipe.author }}/{{ recipe.id }}" target="_blank"><img alt="{{ recipe.title }}"
+    <a class="link" href="{% url 'recipe' username=recipe.author recipe_id=recipe.id %}" target="_blank"><img alt="{{ recipe.title }}"
                                                                                     class="card__image"
                                                                                     src="{{ img.url }}"></a>
     {% endthumbnail %}
     {% else %}
     {% load static %}
-    <a class="link" href="{{ recipe.author }}/{{ recipe.id }}" target="_blank">
+    <a class="link" href="{% url 'recipe' username=recipe.author recipe_id=recipe.id %}" target="_blank">
         <img alt="{{ recipe.title }}" class="card__image" src="{% static 'images/testCardImg.png' %}"></a>
     {% endif %}
     <div class="card__body">
-        <a class="card__title link" href="{{ recipe.author }}/{{ recipe.id }}" target="_blank">{{ recipe.title }}</a>
+        <a class="card__title link" href="{% url 'recipe' username=recipe.author recipe_id=recipe.id %}" target="_blank">{{ recipe.title }}</a>
         <ul class="card__items">
             {% for tag in recipe.tags.all %}
             <li class="card__item"><span class="badge badge_style_{{ tag.style }}">{{ tag.title }}</span></li>
@@ -21,7 +21,7 @@
         </ul>
         <div class="card__items card__items_column">
             <p class="card__text"><span class="icon-time"></span> {{ recipe.cooking_time }} мин.</p>
-            <p class="card__text"><span class="icon-user"></span> <a href="{{ recipe.author }}"
+            <p class="card__text"><span class="icon-user"></span> <a href="{% url 'profile' author=recipe.author %}"
                                                                      style="color: black">{{ recipe.author.get_full_name }}</a></p>
         </div>
     </div>

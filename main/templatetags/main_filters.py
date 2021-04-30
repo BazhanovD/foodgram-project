@@ -1,6 +1,6 @@
 from django import template
 
-from main.models import Favorite, ShopList, Follow
+from main.views import main_tags
 
 register = template.Library()
 
@@ -8,8 +8,8 @@ register = template.Library()
 @register.filter(name='make_tags')
 def make_tags(request, tag):
     new_request = request.GET.copy()
-    if request.GET.getlist('tags') == []:
-        tags_list = ['breakfast', 'lunch', 'dinner']
+    if not request.GET.getlist('tags'):
+        tags_list = list(main_tags)
     else:
         tags_list = new_request.getlist('tags')
     if tag.value in tags_list:
@@ -22,19 +22,19 @@ def make_tags(request, tag):
 
 @register.filter(name='is_follower')
 def is_follower(request, profile):
-    return Follow.objects.filter(user=request.user, author=profile).exists()
+    return request.user.follower.filter(author=profile)
 
 
 @register.filter(name='is_favorite')
 def is_favorite(request, recipe):
-    return Favorite.objects.filter(user=request.user, recipe=recipe).exists()
+    return request.user.favorites.filter(recipe=recipe).exists()
 
 
 @register.filter(name='is_in_purchases')
 def is_in_purchases(request, recipe):
-    return ShopList.objects.filter(user=request.user, recipe=recipe).exists()
+    return request.user.shop_list.filter(recipe=recipe).exists()
 
 
 @register.filter(name='purchases_count')
 def purchases_count(request):
-    return ShopList.objects.filter(user=request.user).count()
+    return request.user.shop_list.count()

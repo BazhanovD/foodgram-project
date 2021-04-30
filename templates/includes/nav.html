@@ -1,28 +1,27 @@
+
 <header class="header">
     <nav class="nav">
         <div class="nav__container container">
             {% if user.is_authenticated %}
             {% load main_filters %}
             <ul class="nav__items list">
-                <li class="nav__item {% if active_index %} nav__item_active {% endif %}"><a class="nav__link link"
+                <li class="nav__item {% if request.resolver_match.url_name == 'index' %} nav__item_active {% endif %}"><a class="nav__link link"
                                                                                             href="{% url 'index' %}">Рецепты</a>
                 </li>
-                <li class="nav__item {% if active_subs %} nav__item_active {% endif %}"><a
+                <li class="nav__item {% if request.resolver_match.url_name == 'my_subscriptions' %} nav__item_active {% endif %}"><a
                         class="nav__link link" href="{% url 'my_subscriptions' %}">Мои подписки</a></li>
-                <li class="nav__item {% if active_new %} nav__item_active {% endif %}"><a class="nav__link link"
+                <li class="nav__item {% if request.resolver_match.url_name == 'new_post' %} nav__item_active {% endif %}"><a class="nav__link link"
                                                                                           href="{% url 'new_post' %}">Создать
                     рецепт</a></li>
-                <li class="nav__item {% if active_fav %} nav__item_active {% endif %}"><a
+                <li class="nav__item {% if request.resolver_match.url_name == 'my_favorites' %} nav__item_active {% endif %}"><a
                         class="nav__link link" href="{% url 'my_favorites' %}">Избранное</a></li>
-                <li class="nav__item {% if active_shoplist %} nav__item_active {% endif %}">
+                <li class="nav__item {% if request.resolver_match.url_name == 'shop_list' %} nav__item_active {% endif %}">
                     <a class="nav__link link" href="{% url 'shop_list' %}">Список покупок</a>
                     <span class="badge badge_style_blue nav__badge" id="counter">{% if request|purchases_count > 0 %}{{ request|purchases_count }}{% endif %}</span>
                 </li>
             </ul>
             <ul class="nav__items list">
-                <li class="nav__item"><a class="nav__link link {% if active_changepass %} nav__item_active {% endif %}"
-                                         href="{% url 'password_change' %}">Изменить
-                    пароль</a></li>
+                <li class="nav__item"><a class="nav__link link" href="{% url 'password_change' %}">Изменить пароль</a></li>
                 <li class="nav__item"><a class="nav__link link" href="{% url 'logout' %}">Выход</a></li>
             </ul>
             {% else %}

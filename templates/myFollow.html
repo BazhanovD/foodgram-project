@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'includes/base.html' %}
 {% load thumbnail %}
 {% block title %}Мои подписки{% endblock %}
 {% block content %}
@@ -6,7 +6,6 @@
 {% load static %}
 <link href="{% static './pages/myFollow.css' %}" rel="stylesheet">
 {% endblock static %}
-{% include 'nav.html' with active_subs=True %}
 {% load main_filters %}
 {% csrf_token %}
 <main class="main container">
@@ -29,12 +28,12 @@
                             {% load thumbnail %}
                             {% if recipe.image %}
                             {% thumbnail recipe.image '480x480' as img %}
-                            <a class="link" href="{{ recipe.author }}/{{ recipe.id }}" target="_blank"><img
+                            <a class="link" href="{% url 'recipe' username=recipe.author recipe_id=recipe.id %}" target="_blank"><img
                                     alt="{{ recipe.title }}" class="recipe__image" src="{{ img.url }}"></a>
                             {% endthumbnail %}
                             {% else %}
                             {% load static %}
-                            <a class="link" href="{{ recipe.author }}/{{ recipe.id }}" target="_blank"><img
+                            <a class="link" href="{% url 'recipe' username=recipe.author recipe_id=recipe.id %}" target="_blank"><img
                                     alt="{{ recipe.title }}" class="recipe__image"
                                     src="{% static 'images/testCardImg.png' %}"></a>
                             {% endif %}

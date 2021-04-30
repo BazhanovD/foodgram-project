@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
@@ -10,9 +10,10 @@
     {% endblock static %}
 </head>
 <body class="body">
+    {% include 'includes/nav.html'%}
     {% block content %}
     {% endblock content %}
-{% include 'footer.html' %}
+{% include 'includes/footer.html' %}
 {% block js %}
 {% endblock js %}
 </body>

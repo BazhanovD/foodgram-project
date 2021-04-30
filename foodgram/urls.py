@@ -5,6 +5,11 @@ from django.contrib.flatpages.views import flatpage
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path
 
+from foodgram import views
+
+handler404 = views.error404
+handler500 = views.error500
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main.urls')),

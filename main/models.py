@@ -22,7 +22,7 @@ class Recipe(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE,
                                related_name='recipes')
     image = models.ImageField(upload_to='main/', blank=True, null=True)
-    cooking_time = models.IntegerField(null=True, blank=True)
+    cooking_time = models.PositiveIntegerField(null=True, blank=True)
     tags = models.ManyToManyField(Tag, related_name='recipes')
     ingredients = models.ManyToManyField(
         Ingredient, through='IngredientAmount',
@@ -67,7 +67,7 @@ class IngredientAmount(models.Model):
                                related_name='recipe_amounts')
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE,
                                    related_name='ingredients')
-    quantity = models.IntegerField()
+    quantity = models.PositiveIntegerField()
 
     def __str__(self):
         return self.ingredient.title
