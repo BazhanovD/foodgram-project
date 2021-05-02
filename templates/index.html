@@ -1,4 +1,4 @@
-{% extends 'includes/base.html' %}
+{% extends 'base.html' %}
 {% load thumbnail %}
 {% block title %}Рецепты{% endblock %}
 {% block content %}
@@ -16,7 +16,7 @@
         {% include 'includes/recipe.html' with recipe=recipe %}
         {% endfor %}
     </div>
-    {% include 'paginator.html' with items=page paginator=paginator tags=tags %}
+    {% include 'includes/paginator.html' with items=page paginator=paginator tags=tags %}
 </main>
 {% endblock content %}
 {% block js %}

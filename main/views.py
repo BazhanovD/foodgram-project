@@ -112,11 +112,13 @@ def recipe_view(request, username, recipe_id):
 
 
 def ingredients(request):
-    if request.GET.get('query'):
-        text = request.GET['query']
+    text = request.GET.get('query')
+    if text:
         ingr_list = list(Ingredient.objects.filter(
             title__istartswith=text).values())
         return JsonResponse(ingr_list, safe=False)
+    else:
+        raise ValueError('error: empty query')
 
 
 @login_required

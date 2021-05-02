@@ -1,4 +1,4 @@
-{% extends 'includes/base.html' %}
+{% extends 'base.html' %}
 {% load thumbnail %}
 {% block title %}Мои подписки{% endblock %}
 {% block content %}
@@ -57,7 +57,7 @@
         </div>
         {% endfor %}
     </div>
-    {% include 'paginator.html' with items=page paginator=paginator%}
+    {% include 'includes/paginator.html' with items=page paginator=paginator%}
 </main>
 {% endblock content %}
 {% block js %}
