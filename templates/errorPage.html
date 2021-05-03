@@ -8,7 +8,7 @@
 <main class="main container">
     <p class="custom-text-block">{{ text }}</p>
     <div class="custom-button-block">
-        <button class="button button_style_blue" onclick="location.href='{% url 'index' %}'">Перейти на главную</button>
+        <a href="{% url 'index' %}">Перейти на главную</a>
     </div>
 </main>
 {% endblock %}
