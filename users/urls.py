@@ -24,5 +24,6 @@ urlpatterns = [
          auth_views.PasswordResetCompleteView.as_view(
              template_name='registration/renewPasswordDone.html'), ),
     path('logout/',
-         auth_views.LogoutView.as_view(template_name='registration/logout.html'), ),
+         auth_views.LogoutView.as_view(
+             template_name='registration/logout.html'), ),
 ]

@@ -11,9 +11,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
 from main.forms import RecipeForm
-from main.models import (Ingredient, IngredientAmount, Recipe,
+from main.models import (Ingredient, Recipe,
                          Favorite, Tag, ShopList, Follow)
-from main.utils import get_ingredients, main_tags
+from main.utils import main_tags
 
 User = get_user_model()
 
