@@ -1,7 +1,9 @@
-# REST API для проекта YaMDb
-[![Actions Status](https://github.com/BazhanovD/foodgram/workflows/foodgram/badge.svg)](https://github.com/BazhanovD/foodgram/actions)
+# Foodgram, Сайт рецептов
+[![Actions Status](https://github.com/BazhanovD/foodgram-project/workflows/Foodgram/badge.svg)](https://github.com/BazhanovD/foodgram/actions)
 
 Проект Foodgram создан для хранения рецептов пользователей, сформированных на основе списка ингридиеентов. Каждый из рецептов имеет своё описание, в т.ч. время готовки и предпочитаемое время употребления - завтрак, обед и ужин. Можно добавлять каждый из рецептов в свой список покупок чтобы потом скачать полный список ингридиентов в удобном формате.
+
+Посмотреть на работу проекта можно по этому адресу: [http://84.252.133.33](https://github.com/BazhanovD/foodgram-project/workflows/Foodgram/badge.svg)
 
 # Установка
 Клонируйте репозиторий.

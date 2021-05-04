@@ -19,6 +19,7 @@ services:
       - db
     volumes:
       - ./static:/code/static
+      - ./media:/code/media
     env_file:
       - ./.env
   nginx:
