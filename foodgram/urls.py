@@ -16,8 +16,8 @@ urlpatterns = [
     path('auth/', include('users.urls')),
     path('auth/', include('django.contrib.auth.urls')),
     path('about/', include('django.contrib.flatpages.urls')),
-    path('author/', flatpage, {'url': '/author/'}, name='about_author'),
-    path('tech/', flatpage, {'url': '/tech/'}, name='about_tech'),
+    path('about/author/', flatpage, {'url': '/author/'}, name='about_author'),
+    path('about/tech/', flatpage, {'url': '/tech/'}, name='about_tech'),
 ]
 
 if settings.DEBUG:
