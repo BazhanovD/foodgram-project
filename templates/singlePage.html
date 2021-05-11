@@ -68,18 +68,20 @@
                     </button>
                 </li>
                 {% endif %}
-                {% if request|is_follower:recipe.author %}
-                <li class="single-card__item">
-                    <button class="button button_style_light-blue button_size_subscribe" name="subscribe">Отписаться от
-                        автора
-                    </button>
-                </li>
-                {% else %}
-                <li class="single-card__item">
-                    <button class="button button_style_light-blue button_size_subscribe" data-out name="subscribe">
-                        Подписаться на автора
-                    </button>
-                </li>
+                {% if user.id != recipe.author.id %}
+                    {% if request|is_follower:recipe.author %}
+                    <li class="single-card__item">
+                        <button class="button button_style_light-blue button_size_subscribe" name="subscribe">Отписаться от
+                            автора
+                        </button>
+                    </li>
+                    {% else %}
+                    <li class="single-card__item">
+                        <button class="button button_style_light-blue button_size_subscribe" data-out name="subscribe">
+                            Подписаться на автора
+                        </button>
+                    </li>
+                    {% endif %}
                 {% endif %}
             </ul>
             {% endif %}

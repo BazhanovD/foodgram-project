@@ -65,14 +65,20 @@ def delete_recipe(request, username, recipe_id):
 @login_required
 def new_recipe(request):
     form = RecipeForm(request.POST or None, files=request.FILES or None)
+    errors = []
     if form.is_valid():
         recipe = form.save_recipe(request)
-        return redirect('recipe',
-                        recipe_id=recipe.id,
-                        username=request.user.username
-                        )
+        if recipe is not False:
+            return redirect('recipe',
+                            recipe_id=recipe.id,
+                            username=request.user.username
+                            )
+        else:
+            errors.append(
+                'Количество ингридиентов не может быть отрицательным!')
 
-    texts = {'title': 'Создание рецепта', 'save_button': 'Создать рецепт'}
+    texts = {'title': 'Создание рецепта', 'save_button': 'Создать рецепт',
+             'errors': errors}
     return render(request, 'formRecipe.html', {'form': form,
                                                'texts': texts, 'edit': False})
 
@@ -80,6 +86,7 @@ def new_recipe(request):
 @login_required
 def recipe_edit(request, username, recipe_id):
     recipe = get_object_or_404(Recipe, pk=recipe_id)
+    errors = []
     if request.user != recipe.author:
         return redirect(
             'recipe',
@@ -91,14 +98,18 @@ def recipe_edit(request, username, recipe_id):
         instance=recipe)
     if form.is_valid():
         recipe = form.save_recipe(request, False)
-        return redirect(
-            'recipe',
-            recipe_id=recipe.id,
-            username=request.user.username
-        )
+        if recipe is not False:
+            return redirect(
+                'recipe',
+                recipe_id=recipe.id,
+                username=request.user.username
+            )
+        else:
+            errors.append(
+                'Количество ингридиентов не может быть отрицательным!')
 
     texts = {'title': 'Редактирование рецепта',
-             'save_button': 'Сохранить рецепт'}
+             'save_button': 'Сохранить рецепт', 'errors': errors}
     return render(request, 'formRecipe.html',
                   {'form': form, 'recipe': recipe,
                    'texts': texts, 'edit': True})

@@ -3,7 +3,7 @@
     {% for tag in tags_list %}
     <li class="tags__item">
         <a class="tags__checkbox tags__checkbox_style_{{ tag.style }} {% if tag.value in tags %}tags__checkbox_active {% endif %}"
-           href="{{ link }}?{{ request|make_tags:tag}}"
+           href="?{{ request|make_tags:tag}}"
            id="{{ tag.title }}"></a>
         <span class="tags__label">{{ tag.title }}</span>
     </li>

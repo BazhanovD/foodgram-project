@@ -53,7 +53,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
-          key: ${{ secrets.SSH_KEY }}
+          password: ${{ secrets.SSH_PASS }}
           script: |
             sudo apt update
             sudo apt upgrade -y
@@ -74,7 +74,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
-          key: ${{ secrets.SSH_KEY }}
+          password: ${{ secrets.SSH_PASS }}
           source: "docker-compose.yaml,env_template, nginx_default"
           target: "~"
 
@@ -83,7 +83,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
-          key: ${{ secrets.SSH_KEY }}
+          password: ${{ secrets.SSH_PASS }}
           script: |
             sudo rm .env
             sudo mv env_template .env
