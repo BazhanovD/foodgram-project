@@ -22,6 +22,8 @@ class RecipeForm(ModelForm):
             recipe.recipe_amounts.all().delete()
         ingredients = get_ingredients(request)
         for title, quantity in ingredients.items():
+            if int(quantity) < 1:
+                return False
             ingredient = get_object_or_404(Ingredient, title=title)
             amount = IngredientAmount(
                 recipe=recipe,
