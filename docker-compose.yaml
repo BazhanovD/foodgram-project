@@ -32,4 +32,4 @@ services:
       - ./static:/static
       - ./media:/media
     ports:
-      - 80:80
+      - 8071:80
