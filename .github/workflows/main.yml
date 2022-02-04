@@ -55,8 +55,8 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            sudo apt update
-            sudo apt install docker.io docker-compose -y
+            #sudo apt update
+            #sudo apt install docker.io docker-compose -y
             sudo systemctl start docker
             sudo systemctl enable docker
             sudo docker-compose down
